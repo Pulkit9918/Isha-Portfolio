@@ -1,26 +1,113 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-dm);
+
+  --color-paper: #f2ece1;
+  --color-ink: #191512;
+  --color-blood: #8f2d2d;
+  --color-ochre: #d98c2b;
+  --color-teal: #1d5c5c;
+  --color-blush: #e8bfae;
+  --color-fade: #a89880;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html, body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--color-ink);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.halftone {
+  background-image: radial-gradient(currentColor 1.4px, transparent 1.5px);
+  background-size: 9px 9px;
+  opacity: .18;
+}
+
+.misreg { text-shadow: 3px 3px 0 var(--color-ochre), -3px -2px 0 var(--color-teal); }
+.misreg-2 { text-shadow: 4px 3px 0 var(--color-blush); }
+
+/* directional frame transitions */
+.fr {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(5%) scale(.985);
+  transition: opacity .5s ease, transform .6s cubic-bezier(.22,1,.36,1);
+}
+.fr.before { transform: translateX(-5%) scale(.985); }
+.fr.live {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.el {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1);
+  transition-delay: calc(var(--i,0) * 110ms);
+}
+.el-l { transform: translateX(-34px) rotate(-1.5deg); }
+.el-r { transform: translateX(34px) rotate(1.5deg); }
+.el-s { transform: scale(.9) rotate(2deg); }
+.live .el { opacity: 1; transform: none; }
+
+/* cursor parallax */
+.par { transition: transform .35s cubic-bezier(.22,1,.36,1); }
+.par-1 { transform: translate3d(calc(var(--mx,0) * 8px), calc(var(--my,0) * 8px), 0); }
+.par-2 { transform: translate3d(calc(var(--mx,0) * 18px), calc(var(--my,0) * 18px), 0); }
+
+.tape {
+  position: absolute;
+  width: 116px; height: 30px;
+  background: rgba(232,191,174,.75);
+  box-shadow: 0 1px 0 rgba(25,21,18,.15);
+}
+
+/* crop marks */
+.crop { position: absolute; width: 26px; height: 26px; opacity: .45; }
+.crop-tl { top: 26px; left: 18px; border-top: 1px solid currentColor; border-left: 1px solid currentColor; }
+.crop-tr { top: 26px; right: 18px; border-top: 1px solid currentColor; border-right: 1px solid currentColor; }
+.crop-bl { bottom: 26px; left: 18px; border-bottom: 1px solid currentColor; border-left: 1px solid currentColor; }
+.crop-br { bottom: 26px; right: 18px; border-bottom: 1px solid currentColor; border-right: 1px solid currentColor; }
+
+/* drop cap */
+.dropcap::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 4.2em;
+  line-height: .82;
+  padding: .05em .12em 0 0;
+  color: var(--color-blood);
+}
+
+@keyframes slowspin { to { transform: rotate(360deg); } }
+.animate-slowspin { animation: slowspin 26s linear infinite; }
+
+@keyframes sway {
+  0%,100% { transform: rotate(-2deg) translateY(0); }
+  50%     { transform: rotate(2deg) translateY(-10px); }
+}
+.animate-sway { animation: sway 7s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .el, .el-l, .el-r, .el-s { opacity: 1; transform: none; transition: none; }
+  .fr { transform: none; transition: opacity .2s ease; }
+  .par-1, .par-2 { transform: none; }
+  .animate-slowspin, .animate-sway { animation: none; }
 }
