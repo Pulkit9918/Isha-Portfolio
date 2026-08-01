@@ -1,6 +1,5 @@
-import Player from "@/components/Player";
-import { FRAMES } from "@/components/frames";
+import Deck from "@/components/Deck";
 
 export default function Home() {
-  return <Player frames={FRAMES} />;
+  return <Deck />;
 }
